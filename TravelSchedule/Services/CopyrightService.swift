@@ -10,17 +10,18 @@ protocol CopyrightServiceProtocol {
 
 final class CopyrightService: CopyrightServiceProtocol {
     private let client: Client
+    private let apikey: String
     
-    init(client: Client) {
+    init(client: Client, apikey: String) {
         self.client = client
+        self.apikey = apikey
     }
     
     func getCopyright() async throws -> CopyrightResponse {
-        let response = try await client.getCopyright(.init())
-        let responseBody = try response.ok.body.html
-        let fullData = try await Data(collecting: responseBody, upTo: 10 * 1024 * 1024)
-        let copyright = try JSONDecoder().decode(CopyrightResponse.self, from: fullData)
+        let response = try await client.getCopyright(
+            query: .init(apikey: apikey)
+        )
         
-        return copyright
+        return try response.ok.body.json
     }
 }

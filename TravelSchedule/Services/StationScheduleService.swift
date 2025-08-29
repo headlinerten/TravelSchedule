@@ -23,6 +23,23 @@ final class StationScheduleService: StationScheduleServiceProtocol {
             station: stationCode
         ))
         
-        return try response.ok.body.json
+        // Правильная проверка и обработка ответа
+        switch response {
+        case .ok(let okResponse):
+            return try okResponse.body.json
+        case .undocumented(let statusCode, _):
+            throw ServiceError.invalidResponse(statusCode: statusCode)
+        }
+    }
+}
+
+enum ServiceError: LocalizedError {
+    case invalidResponse(statusCode: Int)
+    
+    var errorDescription: String? {
+        switch self {
+        case .invalidResponse(let statusCode):
+            return "Получен некорректный ответ от сервера. Код ошибки: \(statusCode)"
+        }
     }
 }

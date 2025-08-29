@@ -15,11 +15,18 @@ paths:
         - Copyright
       summary: Копирайт
       operationId: getCopyright
+      parameters:
+        - name: apikey
+          in: query
+          description: API key
+          required: true
+          schema:
+            type: string
       responses:
         "200":
           description: Успешный ответ
           content:
-            text/html:
+            application/json:
               schema:
                 $ref: '#/components/schemas/CopyrightResponse'
   /v3.0/nearest_stations/:
@@ -90,7 +97,7 @@ paths:
           schema:
             type: integer
       responses:
-        '200':
+        "200":
           description: Успешный ответ
           content:
             application/json:
