@@ -6,7 +6,7 @@ struct SearchBar: View {
     var body: some View {
         HStack(spacing: 0) {
             Image(systemName: "magnifyingglass")
-                .foregroundColor(.grayUniversal)
+                .foregroundColor(.appGray)
                 .padding(.leading, 8)
             TextField("Введите запрос", text: $searchText)
                 .padding(8)
@@ -18,14 +18,14 @@ struct SearchBar: View {
                         if !searchText.isEmpty {
                             Button(action: { searchText = "" }) {
                                 Image(systemName: "xmark.circle.fill")
-                                    .foregroundColor(.grayUniversal)
+                                    .foregroundColor(.appGray)
                             }
                             .padding(.trailing, 16)
                         }
                     }
                 )
         }
-        .background(colorScheme == .dark ? .fillsTertiaryDark : .lightGray)
+        .background(colorScheme == .dark ? .fillsTertiaryDark : .appLightGray)
         .cornerRadius(10)
         .padding(.horizontal, 16)
     }

@@ -11,7 +11,7 @@ struct ServerErrorView: View {
                 .resizable()
                 .scaledToFit()
                 .frame(width: 223, height: 223)
-                .foregroundStyle(.grayUniversal)
+                .foregroundStyle(.appGray)
 
             Text("Ошибка сервера")
                 .font(.system(size: 24, weight: .bold))

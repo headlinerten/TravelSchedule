@@ -2,22 +2,27 @@ import SwiftUI
 import Foundation
 
 struct Cities: Identifiable, Hashable {
-    var id = UUID()
-    var cityName: String
+    let id = UUID()
+    let cityName: String
 }
 
-class CitiesViewModel: ObservableObject {
-    @Published var city: [Cities]
+final class CitiesViewModel: ObservableObject {
+    @Published var city: [Cities] = []
     
     init() {
-        self.city = [
+        loadCities()
+    }
+    
+    private func loadCities() {
+        city = [
             Cities(cityName: "Москва"),
             Cities(cityName: "Санкт-Петербург"),
             Cities(cityName: "Сочи"),
             Cities(cityName: "Горный воздух"),
             Cities(cityName: "Краснодар"),
             Cities(cityName: "Казань"),
-            Cities(cityName: "Омск"),
+            Cities(cityName: "Омск")
         ]
+        print("Cities loaded: \(city.count)")
     }
 }

@@ -6,7 +6,7 @@ struct RailwayStations: Identifiable, Hashable {
     var RailwayStationName: String
 }
 
-class RailwayStationViewModel: ObservableObject {
+final class RailwayStationViewModel: ObservableObject {
     @Published var railwayStation: [RailwayStations]
     
     init() {

@@ -15,7 +15,7 @@ struct NoInternetView: View {
                 .resizable()
                 .scaledToFit()
                 .frame(width: 233, height: 233)
-                .foregroundStyle(.grayUniversal)
+                .foregroundStyle(.appGray)
             
             
             Text("Нет интернета")
