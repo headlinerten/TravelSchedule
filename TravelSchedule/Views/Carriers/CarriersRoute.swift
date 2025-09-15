@@ -12,6 +12,8 @@ struct CarrierRoute: Identifiable, Hashable {
     var withTransfer: Bool
     var carrierImage: String
     var note: String?
+    var email: String
+    var phone: String
 }
 
 final class CarrierRouteViewModel: ObservableObject {
@@ -21,20 +23,19 @@ final class CarrierRouteViewModel: ObservableObject {
     
     init() {
         self.routes = [
-            CarrierRoute(carrierName: "РЖД", date: "14 января", departureTime: "22:30", arrivalTime: "08:15", duration: "20 часов", withTransfer: true, carrierImage: "RJDmock", note: "С пересадкой в Костроме"),
-            CarrierRoute(carrierName: "ФГК", date: "15 января", departureTime: "01:15", arrivalTime: "09:00", duration: "9 часов", withTransfer: false, carrierImage: "FGKmock"),
-            CarrierRoute(carrierName: "Урал логистика", date: "16 января", departureTime: "12:30", arrivalTime: "21:00", duration: "9 часов", withTransfer: false, carrierImage: "URALmock"),
-            CarrierRoute(carrierName: "РЖД", date: "17 января", departureTime: "22:30", arrivalTime: "08:15", duration: "20 часов", withTransfer: true, carrierImage: "RJDmock", note: "С пересадкой в Костроме"),
-            CarrierRoute(carrierName: "РЖД", date: "17 января", departureTime: "22:30", arrivalTime: "08:15", duration: "20 часов", withTransfer: false, carrierImage: "RJDmock"),
-            CarrierRoute(carrierName: "РЖД", date: "17 января", departureTime: "22:30", arrivalTime: "08:15", duration: "20 часов", withTransfer: false, carrierImage: "RJDmock"),
-            CarrierRoute(carrierName: "РЖД", date: "17 января", departureTime: "22:30", arrivalTime: "08:15", duration: "20 часов", withTransfer: false, carrierImage: "RJDmock")
+            CarrierRoute(carrierName: "РЖД", date: "14 января", departureTime: "22:30", arrivalTime: "08:15", duration: "20 часов", withTransfer: true, carrierImage: "RJDmock", note: "С пересадкой в Костроме", email: "i.lozgkina@yandex.ru", phone: "+7 (904) 329-27-71"),
+            CarrierRoute(carrierName: "ФГК", date: "15 января", departureTime: "01:15", arrivalTime: "09:00", duration: "9 часов", withTransfer: false, carrierImage: "FGKmock",email: "i.lozgkina@yandex.ru", phone: "+7 (904) 329-27-71"),
+            CarrierRoute(carrierName: "Урал логистика", date: "16 января", departureTime: "12:30", arrivalTime: "21:00", duration: "9 часов", withTransfer: false, carrierImage: "URALmock",email: "i.lozgkina@yandex.ru", phone: "+7 (904) 329-27-71"),
+            CarrierRoute(carrierName: "РЖД", date: "17 января", departureTime: "22:30", arrivalTime: "08:15", duration: "20 часов", withTransfer: true, carrierImage: "RJDmock", note: "С пересадкой в Костроме", email: "i.lozgkina@yandex.ru", phone: "+7 (904) 329-27-71"),
+            CarrierRoute(carrierName: "РЖД", date: "17 января", departureTime: "22:30", arrivalTime: "08:15", duration: "20 часов", withTransfer: false, carrierImage: "RJDmock", email: "i.lozgkina@yandex.ru", phone: "+7 (904) 329-27-71"),
+            CarrierRoute(carrierName: "РЖД", date: "17 января", departureTime: "22:30", arrivalTime: "08:15", duration: "20 часов", withTransfer: false, carrierImage: "RJDmock",email: "i.lozgkina@yandex.ru", phone: "+7 (904) 329-27-71"),
+            CarrierRoute(carrierName: "РЖД", date: "17 января", departureTime: "22:30", arrivalTime: "08:15", duration: "20 часов", withTransfer: false, carrierImage: "RJDmock",email: "i.lozgkina@yandex.ru", phone: "+7 (904) 329-27-71")
         ]
     }
     
     
     var filteredRoutes: [CarrierRoute] {
         let filtered = routes.filter { route in
-            // Фильтрация по времени отправления
             let isPeriodMatch: Bool
             if selectedPeriods.isEmpty {
                 isPeriodMatch = true
@@ -55,7 +56,6 @@ final class CarrierRouteViewModel: ObservableObject {
                 }
             }
             
-            // Фильтрация по пересадкам
             let isTransferMatch: Bool
             if let showWithTransfer = showWithTransfer {
                 isTransferMatch = route.withTransfer == showWithTransfer

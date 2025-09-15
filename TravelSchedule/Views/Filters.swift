@@ -111,7 +111,6 @@ struct FiltersView: View {
          })
          .toolbar(.hidden, for: .tabBar)
          .onAppear {
-             // Восстановить текущее состояние фильтров
              showWithTransfer = viewModel.showWithTransfer
          }
      }

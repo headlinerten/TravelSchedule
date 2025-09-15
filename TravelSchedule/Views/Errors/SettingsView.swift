@@ -6,6 +6,7 @@ struct SettingsView: View {
     @State private var isDarkMode: Bool = false
     @State private var showNoInternet = false
     @State private var showServerError = false
+    @State private var showAgreement = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
@@ -23,6 +24,24 @@ struct SettingsView: View {
             .clipShape(RoundedRectangle(cornerRadius: 12))
             .padding(.horizontal, 16)
             
+            HStack{
+                Text("Пользовательское соглашение")
+                    .font(.system(size: 17, weight: .regular))
+                    .foregroundStyle(.blackDay)
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 8)
+               
+                Spacer()
+                Button(action: {
+                    showAgreement = true
+                }) {
+                    Image(systemName: "chevron.forward")
+                        .foregroundStyle(.blackDay)
+                }
+                .padding(.horizontal, -17)
+                .padding(.vertical, 8)
+                .frame(width: 34, height: 34)
+            }
             
             Button(action: {
                 showNoInternet = true
@@ -50,8 +69,21 @@ struct SettingsView: View {
                     .padding(.horizontal, 16)
             }
             
-            
             Spacer()
+            
+            VStack(alignment: .center, spacing: 16){
+                Text("Приложение использует API «Яндекс.Расписания»")
+                    .font(.system(size: 12, weight: .regular))
+                    .foregroundStyle(.blackDay)
+                    .lineLimit(1)
+                   
+                Text("Версия 1.0 (beta)")
+                    .font(.system(size: 12, weight: .regular))
+                    .foregroundStyle(.blackDay)
+                    .lineLimit(1)
+            }
+            .frame(width: 343, height: 44)
+            .padding(.horizontal, 30)
         }
         .toolbar(.visible, for: .tabBar)
         .preferredColorScheme(selectedTheme == .auto ? nil : (selectedTheme == .dark ? .dark : .light))
@@ -76,13 +108,50 @@ struct SettingsView: View {
                 ServerErrorViewWrapper(isPresented: $showServerError)
             }
         }
+        .fullScreenCover(isPresented: $showAgreement) {
+            NavigationStack {
+                AgreementViewWrapper(isPresented: $showAgreement)
+            }
+        }
     }
 }
 
-// Обертки для правильной работы кнопки назад
+struct AgreementViewWrapper: View {
+    @Binding var isPresented: Bool
+    @State private var isNetworkAvailable: Bool = true
+    private let agreementURLString = "https://yandex.ru/legal/practicum_offer"
+    
+    var body: some View {
+        VStack {
+            if isNetworkAvailable {
+                if let url = URL(string: agreementURLString) {
+                    WebView(url: url, isNetworkAvailable: $isNetworkAvailable)
+                } else {
+                    NoInternetViewWrapper(isPresented: $isPresented)
+                }
+            } else {
+                NoInternetViewWrapper(isPresented: $isPresented)
+            }
+        }
+        .background(Color(.whiteDay))
+        .navigationTitle("Пользовательское соглашение")
+        .navigationBarTitleDisplayMode(.inline)
+        .navigationBarBackButtonHidden(true)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarLeading) {
+                Button(action: {
+                    isPresented = false
+                }) {
+                    Image(systemName: "chevron.left")
+                        .foregroundColor(.blackDay)
+                }
+            }
+        }
+    }
+}
+
 struct NoInternetViewWrapper: View {
     @Binding var isPresented: Bool
-    @State private var navigationPath = NavigationPath()
     
     var body: some View {
         VStack {
@@ -118,7 +187,6 @@ struct NoInternetViewWrapper: View {
 
 struct ServerErrorViewWrapper: View {
     @Binding var isPresented: Bool
-    @State private var navigationPath = NavigationPath()
     
     var body: some View {
         VStack {

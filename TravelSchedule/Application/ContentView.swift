@@ -9,7 +9,7 @@ struct ContentView: View {
     @State private var toCity: Cities?
     @State private var toStation: RailwayStations?
     @StateObject private var carrierViewModel = CarrierRouteViewModel()
-
+    
     var body: some View {
         NavigationStack(path: $navigationPath) {
             ZStack(alignment: .top) {
@@ -102,7 +102,7 @@ struct ContentView: View {
             .toolbar(.hidden, for: .tabBar)
         }
     }
-
+    
     // MARK: - Navigation Destinations
     
     enum Destination: Hashable {

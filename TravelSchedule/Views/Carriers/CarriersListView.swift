@@ -7,7 +7,7 @@ struct CarriersListView: View {
     let toCity: Cities
     let toStation: RailwayStations
     @Binding var navigationPath: NavigationPath
-
+    
     var body: some View {
         ZStack {
             VStack {
@@ -41,7 +41,7 @@ struct CarriersListView: View {
                     .foregroundStyle(.blackDay)
             })
             .toolbar(.hidden, for: .tabBar)
-
+            
             VStack {
                 Spacer()
                 Button(action: {
@@ -56,22 +56,22 @@ struct CarriersListView: View {
                         .font(.system(size: 17, weight: .bold))
                         .foregroundStyle(.white)
                     if !viewModel.selectedPeriods.isEmpty || viewModel.showWithTransfer != nil {
-                                                Circle()
+                        Circle()
                             .fill(.redUniversal)
-                                                    .frame(width: 8, height: 8)
-                                                    .padding(.leading, -4)
-                                            }
-                                        }
-                        .frame(width: 343, height: 35)
-                        .padding(.vertical, 12)
-                        .background(Color(UIColor(resource: .blueUniversal)))
-                        .clipShape(RoundedRectangle(cornerRadius: 16))
+                            .frame(width: 8, height: 8)
+                            .padding(.leading, -4)
+                    }
                 }
-                .padding(.horizontal, 16)
-                .padding(.bottom, 16)
+                .frame(width: 343, height: 35)
+                .padding(.vertical, 12)
+                .background(Color(UIColor(resource: .blueUniversal)))
+                .clipShape(RoundedRectangle(cornerRadius: 16))
             }
+            .padding(.horizontal, 16)
+            .padding(.bottom, 16)
         }
     }
+}
 
 
 #Preview {
