@@ -54,7 +54,7 @@ struct ScheduleView: View {
                         HStack {
                             VStack(alignment: .leading, spacing: 0) {
                                 Button(action: {
-                                    navigationPath.append(ContentView.Destination.cities(isSelectingFrom: true))
+                                    navigationPath.append(Destination.cities(isSelectingFrom: true))
                                 }) {
                                     Text(fromText)
                                         .foregroundStyle(fromCity == nil ? .appGray : .blackUniversal)
@@ -64,7 +64,7 @@ struct ScheduleView: View {
                                 }
                                 
                                 Button(action: {
-                                    navigationPath.append(ContentView.Destination.cities(isSelectingFrom: false))
+                                    navigationPath.append(Destination.cities(isSelectingFrom: false))
                                 }) {
                                     Text(toText)
                                         .foregroundStyle(toCity == nil ? .appGray : .blackUniversal)
@@ -106,7 +106,7 @@ struct ScheduleView: View {
                     if isFindButtonEnabled {
                         Button(action: {
                             if let fromCity = fromCity, let fromStation = fromStation, let toCity = toCity, let toStation = toStation {
-                                navigationPath.append(ContentView.Destination.carriers(fromCity: fromCity, fromStation: fromStation, toCity: toCity, toStation: toStation))
+                                navigationPath.append(Destination.carriers(fromCity: fromCity, fromStation: fromStation, toCity: toCity, toStation: toStation))
                             }
                         }) {
                             Text("Найти")

@@ -30,6 +30,7 @@ struct SettingsView: View {
                     .foregroundStyle(.blackDay)
                     .padding(.horizontal, 16)
                     .padding(.vertical, 8)
+                    .padding(.horizontal, 16)
                
                 Spacer()
                 Button(action: {
