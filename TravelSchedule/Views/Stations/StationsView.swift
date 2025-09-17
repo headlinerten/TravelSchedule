@@ -2,6 +2,7 @@ import SwiftUI
 
 struct RailwayStationsView: View {
     @StateObject var viewModel = RailwayStationViewModel()
+    @StateObject var citiesViewModel = CitiesViewModel()
     @State private var searchStation = ""
     let selectedCity: Cities
     @Binding var selectedStation: RailwayStations?
@@ -54,6 +55,7 @@ struct RailwayStationsView: View {
                         ForEach(filteredRailwayStations) { station in
                             Button(action: {
                                 selectedStation = station
+                                // Возвращаемся на главный экран
                                 navigationPath.removeLast(navigationPath.count)
                             }) {
                                 RailwayStationRowView(railwayStation: station)
@@ -69,12 +71,9 @@ struct RailwayStationsView: View {
             .toolbar(.hidden, for: .tabBar)
             .navigationBarBackButtonHidden(true)
         }
+        .onAppear {
+            // Загружаем станции выбранного города
+            viewModel.loadStationsForCity(selectedCity, from: citiesViewModel)
+        }
     }
-}
-#Preview {
-    RailwayStationsView(
-        selectedCity: Cities(cityName: "Москва"),
-        selectedStation: .constant(nil),
-        navigationPath: .constant(NavigationPath())
-    )
 }

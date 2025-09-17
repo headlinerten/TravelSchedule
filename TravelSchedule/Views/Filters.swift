@@ -115,15 +115,3 @@ struct FiltersView: View {
          }
      }
  }
-
-
-#Preview {
-    FiltersView(
-        viewModel: CarrierRouteViewModel(),
-        fromCity: Cities(cityName: "Москва"),
-        fromStation: RailwayStations(RailwayStationName: "Киевский вокзал"),
-        toCity: Cities(cityName: "Санкт-Петербург"),
-        toStation: RailwayStations(RailwayStationName: "Московский вокзал"),
-        navigationPath: .constant(NavigationPath())
-    )
-}

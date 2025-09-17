@@ -14,6 +14,7 @@ struct CitiesView: View {
     
     var body: some View {
         VStack {
+            // Header с кнопкой назад и заголовком
             ZStack {
                 HStack {
                     Button(action: {
@@ -32,42 +33,97 @@ struct CitiesView: View {
             .padding(.horizontal)
             .padding(.top, 8)
             
-            SearchBar(searchText: $searchCity)
-                .padding(.bottom, 16)
-            
-            ScrollView {
-                if filteredCities.isEmpty {
-                    VStack {
-                        Spacer()
-                        Text("Город не найден")
-                            .font(.system(size: 24, weight: .bold))
-                            .foregroundStyle(.blackDay)
-                            .frame(maxWidth: .infinity, alignment: .center)
-                            .padding(.top, 238)
-                        Spacer()
-                    }
-                    .frame(maxHeight: .infinity)
-                    .padding(.bottom, 200)
-                } else {
-                    LazyVStack {
-                        ForEach(filteredCities) { city in
-                            Button(action: {
-                                selectedCity = city
-                                navigationPath.append(Destination.stations(city: city, isSelectingFrom: isSelectingFrom))
-                            }) {
-                                CityRowView(city: city)
-                                    .listRowInsets(EdgeInsets(top: 4, leading: 9, bottom: 4, trailing: 4))
-                                    .foregroundStyle(.blackDay)
-                                    .listRowSeparator(.hidden)
-                            }
+            // Проверяем состояние загрузки
+            if viewModel.isLoading {
+                Spacer()
+                ProgressView("Загрузка городов...")
+                    .progressViewStyle(CircularProgressViewStyle())
+                    .padding()
+                Spacer()
+            } else if let error = viewModel.error {
+                Spacer()
+                VStack(spacing: 16) {
+                    Image(systemName: "exclamationmark.triangle")
+                        .font(.system(size: 50))
+                        .foregroundColor(.red)
+                    Text("Ошибка загрузки")
+                        .font(.system(size: 24, weight: .bold))
+                        .foregroundStyle(.blackDay)
+                    Text(error)
+                        .font(.system(size: 14))
+                        .foregroundStyle(.gray)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal)
+                    Button(action: {
+                        Task {
+                            await viewModel.loadCities()
                         }
-                        .listStyle(.plain)
-                        .listRowSeparator(.hidden)
+                    }) {
+                        Text("Повторить")
+                            .font(.system(size: 17, weight: .medium))
+                            .foregroundStyle(.white)
+                            .padding(.horizontal, 24)
+                            .padding(.vertical, 12)
+                            .background(Color.blueUniversal)
+                            .cornerRadius(10)
+                    }
+                }
+                Spacer()
+            } else {
+                // Поисковая строка
+                SearchBar(searchText: $searchCity)
+                    .padding(.bottom, 16)
+                
+                // Список городов
+                ScrollView {
+                    if filteredCities.isEmpty {
+                        VStack {
+                            Spacer()
+                            Text("Город не найден")
+                                .font(.system(size: 24, weight: .bold))
+                                .foregroundStyle(.blackDay)
+                                .frame(maxWidth: .infinity, alignment: .center)
+                                .padding(.top, 238)
+                            Spacer()
+                        }
+                        .frame(maxHeight: .infinity)
+                        .padding(.bottom, 200)
+                    } else {
+                        LazyVStack {
+                            ForEach(filteredCities) { city in
+                                Button(action: {
+                                    selectedCity = city
+                                    // Если у города есть станции, переходим к выбору станции
+                                    if !city.stations.isEmpty {
+                                        navigationPath.append(Destination.stations(city: city, isSelectingFrom: isSelectingFrom))
+                                    } else {
+                                        // Если станций нет, возвращаемся назад
+                                        // (можно показать алерт, что у города нет станций)
+                                        navigationPath.removeLast()
+                                    }
+                                }) {
+                                    CityRowView(city: city)
+                                        .listRowInsets(EdgeInsets(top: 4, leading: 9, bottom: 4, trailing: 4))
+                                        .foregroundStyle(.blackDay)
+                                        .listRowSeparator(.hidden)
+                                }
+                            }
+                            .listStyle(.plain)
+                            .listRowSeparator(.hidden)
+                        }
                     }
                 }
             }
-            .toolbar(.hidden, for: .tabBar)
-            .navigationBarBackButtonHidden(true)
+        }
+        .toolbar(.hidden, for: .tabBar)
+        .navigationBarBackButtonHidden(true)
+        .onAppear {
+            // Если города еще не загружены и не идет загрузка, запускаем загрузку
+            if viewModel.city.isEmpty && !viewModel.isLoading {
+                Task {
+                    await viewModel.loadCities()
+                }
+            }
         }
     }
 }

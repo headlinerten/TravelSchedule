@@ -55,19 +55,3 @@ struct CarrierDetailView: View {
         .toolbar(.hidden, for: .tabBar)
     }
 }
-#Preview {
-    CarrierDetailView(
-        route: CarrierRoute(
-            carrierName: "РЖД",
-            date: "17 января",
-            departureTime: "22:30",
-            arrivalTime: "08:15",
-            duration: "20 часов",
-            withTransfer: true,
-            carrierImage: "RJDmock",
-            note: "С пересадкой в Костроме",
-            email: "info@rzd.ru",
-            phone: "+7 800 775-00-00"
-        ), navigationPath: .constant(NavigationPath())
-    )
-}
