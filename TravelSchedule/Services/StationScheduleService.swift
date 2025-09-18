@@ -23,7 +23,6 @@ final class StationScheduleService: StationScheduleServiceProtocol {
             station: stationCode
         ))
         
-        // Правильная проверка и обработка ответа
         switch response {
         case .ok(let okResponse):
             return try okResponse.body.json

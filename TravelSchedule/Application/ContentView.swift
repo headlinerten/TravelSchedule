@@ -9,7 +9,7 @@ struct ContentView: View {
     @State private var toCity: Cities?
     @State private var toStation: RailwayStations?
     @StateObject private var carrierViewModel = CarrierRouteViewModel()
-
+    
     var body: some View {
         NavigationStack(path: $navigationPath) {
             ZStack(alignment: .top) {
@@ -62,6 +62,10 @@ struct ContentView: View {
     @ViewBuilder
     private func destinationView(for destination: Destination) -> some View {
         switch destination {
+        case .carrierDetail(let route):
+            CarrierDetailView(route: route, navigationPath: $navigationPath)
+                .toolbar(.hidden, for: .tabBar)
+            
         case .cities(let isSelectingFrom):
             CitiesView(
                 selectedCity: isSelectingFrom ? $fromCity : $toCity,
@@ -101,15 +105,6 @@ struct ContentView: View {
             )
             .toolbar(.hidden, for: .tabBar)
         }
-    }
-
-    // MARK: - Navigation Destinations
-    
-    enum Destination: Hashable {
-        case cities(isSelectingFrom: Bool)
-        case stations(city: Cities, isSelectingFrom: Bool)
-        case carriers(fromCity: Cities, fromStation: RailwayStations, toCity: Cities, toStation: RailwayStations)
-        case filters(fromCity: Cities, fromStation: RailwayStations, toCity: Cities, toStation: RailwayStations)
     }
 }
 

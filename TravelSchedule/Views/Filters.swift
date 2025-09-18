@@ -111,20 +111,7 @@ struct FiltersView: View {
          })
          .toolbar(.hidden, for: .tabBar)
          .onAppear {
-             // Восстановить текущее состояние фильтров
              showWithTransfer = viewModel.showWithTransfer
          }
      }
  }
-
-
-#Preview {
-    FiltersView(
-        viewModel: CarrierRouteViewModel(),
-        fromCity: Cities(cityName: "Москва"),
-        fromStation: RailwayStations(RailwayStationName: "Киевский вокзал"),
-        toCity: Cities(cityName: "Санкт-Петербург"),
-        toStation: RailwayStations(RailwayStationName: "Московский вокзал"),
-        navigationPath: .constant(NavigationPath())
-    )
-}

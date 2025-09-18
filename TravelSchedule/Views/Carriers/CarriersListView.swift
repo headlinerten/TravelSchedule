@@ -7,7 +7,7 @@ struct CarriersListView: View {
     let toCity: Cities
     let toStation: RailwayStations
     @Binding var navigationPath: NavigationPath
-
+    
     var body: some View {
         ZStack {
             VStack {
@@ -25,9 +25,14 @@ struct CarriersListView: View {
                     Spacer()
                 } else {
                     List(viewModel.filteredRoutes) { route in
-                        CarriersRowView(route: route)
-                            .listRowInsets(EdgeInsets(top: 4, leading: 9, bottom: 4, trailing: 8))
-                            .listRowBackground(Color.clear)
+                        Button(action: {
+                            navigationPath.append(Destination.carrierDetail(route: route))
+                        }) {
+                            CarriersRowView(route: route)
+                                .listRowInsets(EdgeInsets(top: 4, leading: 9, bottom: 4, trailing: 8))
+                                .listRowBackground(Color.clear)
+                        }
+                        .buttonStyle(PlainButtonStyle())
                     }
                     .listStyle(.plain)
                     .background(Color.clear)
@@ -41,11 +46,11 @@ struct CarriersListView: View {
                     .foregroundStyle(.blackDay)
             })
             .toolbar(.hidden, for: .tabBar)
-
+            
             VStack {
                 Spacer()
                 Button(action: {
-                    navigationPath.append(ContentView.Destination.filters(
+                    navigationPath.append(Destination.filters(
                         fromCity: fromCity,
                         fromStation: fromStation,
                         toCity: toCity,
@@ -56,31 +61,24 @@ struct CarriersListView: View {
                         .font(.system(size: 17, weight: .bold))
                         .foregroundStyle(.white)
                     if !viewModel.selectedPeriods.isEmpty || viewModel.showWithTransfer != nil {
-                                                Circle()
+                        Circle()
                             .fill(.redUniversal)
-                                                    .frame(width: 8, height: 8)
-                                                    .padding(.leading, -4)
-                                            }
-                                        }
-                        .frame(width: 343, height: 35)
-                        .padding(.vertical, 12)
-                        .background(Color(UIColor(resource: .blueUniversal)))
-                        .clipShape(RoundedRectangle(cornerRadius: 16))
+                            .frame(width: 8, height: 8)
+                            .padding(.leading, -4)
+                    }
                 }
-                .padding(.horizontal, 16)
-                .padding(.bottom, 16)
+                .frame(width: 343, height: 35)
+                .padding(.vertical, 12)
+                .background(Color(UIColor(resource: .blueUniversal)))
+                .clipShape(RoundedRectangle(cornerRadius: 16))
+            }
+            .padding(.horizontal, 16)
+            .padding(.bottom, 16)
+        }
+        .onAppear {
+            Task {
+                await viewModel.loadRoutes(from: fromStation, to: toStation)
             }
         }
     }
-
-
-#Preview {
-    CarriersListView(
-        viewModel: CarrierRouteViewModel(),
-        fromCity: Cities(cityName: "Москва"),
-        fromStation: RailwayStations(RailwayStationName: "Киевский вокзал"),
-        toCity: Cities(cityName: "Санкт-Петербург"),
-        toStation: RailwayStations(RailwayStationName: "Московский вокзал"),
-        navigationPath: .constant(NavigationPath())
-    )
 }
