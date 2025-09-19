@@ -1,7 +1,7 @@
 import SwiftUI
 import Foundation
 
-struct RailwayStations: Identifiable, Hashable {
+struct RailwayStations: Identifiable, Hashable, Sendable {
     var id = UUID()
     var RailwayStationName: String
     var stationCode: String
@@ -13,6 +13,8 @@ final class RailwayStationViewModel: ObservableObject {
     @Published var isLoading = false
     
     func loadStationsForCity(_ city: Cities, from viewModel: CitiesViewModel) {
+        isLoading = true
         self.railwayStation = viewModel.getStationsForCity(city)
+        isLoading = false
     }
 }

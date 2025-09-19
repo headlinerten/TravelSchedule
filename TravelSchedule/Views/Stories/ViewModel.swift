@@ -2,14 +2,14 @@ import Foundation
 import SwiftUI
 import Combine
 
-class StoriesViewModel: ObservableObject {
+@MainActor
+final class StoriesViewModel: ObservableObject {
     @Published var story: [Stories]
     @Published var showStoryView: Bool = false
     @Published var currentStoryIndex: Int = 0
     @Published var currentImageIndex: Int = 0
     @Published var progress: CGFloat = 0.0
     @Published var viewedStories: Set<UUID> = []
-    
     
     private var timer: Timer.TimerPublisher = Timer.publish(every: 0.05, on: .main, in: .common)
     private var cancellable: AnyCancellable?
@@ -36,10 +36,12 @@ class StoriesViewModel: ObservableObject {
             .autoconnect()
             .sink { [weak self] _ in
                 guard let self = self else { return }
-                withAnimation(.linear(duration: 0.05)) {
-                    self.progress += 0.05 / self.imageDuration
-                    if self.progress >= 1.0 {
-                        self.navigateForward()
+                Task { @MainActor in
+                    withAnimation(.linear(duration: 0.05)) {
+                        self.progress += 0.05 / self.imageDuration
+                        if self.progress >= 1.0 {
+                            self.navigateForward()
+                        }
                     }
                 }
             }

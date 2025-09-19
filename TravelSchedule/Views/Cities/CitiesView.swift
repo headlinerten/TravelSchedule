@@ -98,7 +98,6 @@ struct CitiesView: View {
                                         navigationPath.append(Destination.stations(city: city, isSelectingFrom: isSelectingFrom))
                                     } else {
                                         // Если станций нет, возвращаемся назад
-                                        // (можно показать алерт, что у города нет станций)
                                         navigationPath.removeLast()
                                     }
                                 }) {
@@ -117,12 +116,10 @@ struct CitiesView: View {
         }
         .toolbar(.hidden, for: .tabBar)
         .navigationBarBackButtonHidden(true)
-        .onAppear {
-            // Если города еще не загружены и не идет загрузка, запускаем загрузку
+        .task {
+            // Загружаем города при появлении экрана
             if viewModel.city.isEmpty && !viewModel.isLoading {
-                Task {
-                    await viewModel.loadCities()
-                }
+                await viewModel.loadCities()
             }
         }
     }

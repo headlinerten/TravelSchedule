@@ -2,7 +2,7 @@ import Foundation
 
 // MARK: - Mock Data Store
 
-final class MockDataStore {
+final class MockDataStore: @unchecked Sendable {
     
     static let shared = MockDataStore()
     

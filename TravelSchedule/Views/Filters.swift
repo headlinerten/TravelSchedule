@@ -1,7 +1,6 @@
 import SwiftUI
 
-
-enum PeriodofTime: String, CaseIterable, Hashable {
+enum PeriodofTime: String, CaseIterable, Hashable, Sendable {
     case morning = "Утро 06:00 - 12:00"
     case day = "День 12:00 - 18:00"
     case evening = "Вечер 18:00 - 00:00"

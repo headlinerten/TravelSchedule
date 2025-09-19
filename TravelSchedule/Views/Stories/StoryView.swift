@@ -109,8 +109,8 @@ struct StoryView: View {
                     dismiss()
                 }
             }
-            .onAppear {
-                viewModel.startTimer()
+            .task {
+                await viewModel.startTimer()
             }
             .onDisappear {
                 viewModel.stopTimer()
