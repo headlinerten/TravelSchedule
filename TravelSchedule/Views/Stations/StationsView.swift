@@ -37,41 +37,49 @@ struct RailwayStationsView: View {
             SearchBar(searchText: $searchStation)
                 .padding(.bottom, 16)
             
-            ScrollView {
-                if filteredRailwayStations.isEmpty {
-                    VStack {
-                        Spacer()
-                        Text("Станция не найдена")
-                            .font(.system(size: 24, weight: .bold))
-                            .foregroundStyle(.blackDay)
-                            .frame(maxWidth: .infinity, alignment: .center)
-                            .padding(.top, 238)
-                        Spacer()
-                    }
-                    .frame(maxHeight: .infinity)
-                    .padding(.bottom, 200)
-                } else {
-                    LazyVStack{
-                        ForEach(filteredRailwayStations) { station in
-                            Button(action: {
-                                selectedStation = station
-                                // Возвращаемся на главный экран
-                                navigationPath.removeLast(navigationPath.count)
-                            }) {
-                                RailwayStationRowView(railwayStation: station)
-                                    .listRowInsets(EdgeInsets(top: 4, leading: 9, bottom: 4, trailing: 8))
-                                    .foregroundStyle(.blackDay)
-                                    .listRowSeparator(.hidden)
-                            }
+            if viewModel.isLoading {
+                Spacer()
+                ProgressView("Загрузка станций...")
+                    .progressViewStyle(CircularProgressViewStyle())
+                Spacer()
+            } else {
+                ScrollView {
+                    if filteredRailwayStations.isEmpty {
+                        VStack {
+                            Spacer()
+                            Text("Станция не найдена")
+                                .font(.system(size: 24, weight: .bold))
+                                .foregroundStyle(.blackDay)
+                                .frame(maxWidth: .infinity, alignment: .center)
+                                .padding(.top, 238)
+                            Spacer()
                         }
-                        .listStyle(.plain)
+                        .frame(maxHeight: .infinity)
+                        .padding(.bottom, 200)
+                    } else {
+                        LazyVStack{
+                            ForEach(filteredRailwayStations) { station in
+                                Button(action: {
+                                    selectedStation = station
+                                    while !navigationPath.isEmpty {
+                                        navigationPath.removeLast()
+                                    }
+                                }) {
+                                    RailwayStationRowView(railwayStation: station)
+                                        .listRowInsets(EdgeInsets(top: 4, leading: 9, bottom: 4, trailing: 8))
+                                        .foregroundStyle(.blackDay)
+                                        .listRowSeparator(.hidden)
+                                }
+                            }
+                            .listStyle(.plain)
+                        }
                     }
                 }
             }
-            .toolbar(.hidden, for: .tabBar)
-            .navigationBarBackButtonHidden(true)
         }
-        .onAppear {
+        .toolbar(.hidden, for: .tabBar)
+        .navigationBarBackButtonHidden(true)
+        .task {
             // Загружаем станции выбранного города
             viewModel.loadStationsForCity(selectedCity, from: citiesViewModel)
         }

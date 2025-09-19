@@ -1,17 +1,21 @@
 import SwiftUI
 import WebKit
-
-
+import Network
 
 struct WebView: UIViewControllerRepresentable {
     let url: URL
     @Binding var isNetworkAvailable: Bool
+    
     func makeUIViewController(context: Context) -> WKWebViewController {
         let controller = WKWebViewController()
         controller.url = url
+        controller.networkStatusHandler = { isAvailable in
+            DispatchQueue.main.async {
+                self.isNetworkAvailable = isAvailable
+            }
+        }
         return controller
     }
-    
     
     func updateUIViewController(_ uiViewController: WKWebViewController, context: Context) {
     }
@@ -21,7 +25,7 @@ class WKWebViewController: UIViewController {
     var url: URL?
     private var webView: WKWebView!
     
-    var netWorkStatusHandler: ((Bool) -> Void)?
+    var networkStatusHandler: ((Bool) -> Void)?
     
     private let monitor = NWPathMonitor()
     private let queue = DispatchQueue(label: "NetworkMonitor")
@@ -45,9 +49,9 @@ class WKWebViewController: UIViewController {
     
     private func startNetworkMonitoring() {
         monitor.pathUpdateHandler = { [weak self] path in
-            guard let self = self else {return}
+            guard let self = self else { return }
             if path.status == .satisfied {
-                self.netWorkStatusHandler?(true)
+                self.networkStatusHandler?(true)
                                 
                 if let url = self.url {
                     DispatchQueue.main.async {
@@ -57,11 +61,12 @@ class WKWebViewController: UIViewController {
                     }
                 }
             } else {
-                self.netWorkStatusHandler?(false)
+                self.networkStatusHandler?(false)
             }
         }
         monitor.start(queue: queue)
-        }
+    }
+    
     deinit {
         monitor.cancel()
     }
@@ -88,5 +93,13 @@ extension WKWebViewController: WKNavigationDelegate {
         """
         
         webView.evaluateJavaScript(js, completionHandler: nil)
+    }
+    
+    func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
+        self.networkStatusHandler?(false)
+    }
+    
+    func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
+        self.networkStatusHandler?(false)
     }
 }

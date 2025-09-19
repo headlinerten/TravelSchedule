@@ -18,12 +18,30 @@ final class ScheduleService: ScheduleServiceProtocol {
     }
     
     func getSchedule(from: String, to: String) async throws -> ScheduleBetweenStations {
-        let response = try await client.getSchedualBetweenStations(query: .init(
-            apikey: apikey,
-            from: from,
-            to: to
-        ))
+        print("ScheduleService: запрос расписания от \(from) до \(to)")
         
-        return try response.ok.body.json
+        do {
+            let response = try await client.getSchedualBetweenStations(query: .init(
+                apikey: apikey,
+                from: from,
+                to: to,
+                format: "json",
+                lang: "ru_RU",
+                transport_types: "train"
+            ))
+            
+            switch response {
+            case .ok(let okResponse):
+                let result = try okResponse.body.json
+                print("ScheduleService: получен успешный ответ")
+                return result
+            case .undocumented(let statusCode, _):
+                print("ScheduleService: ошибка HTTP \(statusCode)")
+                throw ServiceError.invalidResponse(statusCode: statusCode)
+            }
+        } catch {
+            print("ScheduleService ERROR: \(error)")
+            throw error
+        }
     }
 }

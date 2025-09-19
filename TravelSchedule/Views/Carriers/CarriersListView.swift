@@ -15,7 +15,29 @@ struct CarriersListView: View {
                     .font(.system(size: 24, weight: .bold))
                     .foregroundStyle(.blackDay)
                     .padding(.leading, -1)
-                if viewModel.filteredRoutes.isEmpty {
+                
+                if viewModel.isLoading {
+                    Spacer()
+                    ProgressView("Загрузка маршрутов...")
+                        .progressViewStyle(CircularProgressViewStyle())
+                    Spacer()
+                } else if let error = viewModel.error {
+                    Spacer()
+                    VStack(spacing: 16) {
+                        Image(systemName: "exclamationmark.triangle")
+                            .font(.system(size: 50))
+                            .foregroundColor(.red)
+                        Text("Ошибка загрузки")
+                            .font(.system(size: 24, weight: .bold))
+                            .foregroundStyle(.blackDay)
+                        Text(error)
+                            .font(.system(size: 14))
+                            .foregroundStyle(.gray)
+                            .multilineTextAlignment(.center)
+                            .padding(.horizontal)
+                    }
+                    Spacer()
+                } else if viewModel.filteredRoutes.isEmpty {
                     Spacer()
                     Text("Вариантов нет")
                         .font(.system(size: 24, weight: .bold))
@@ -75,10 +97,8 @@ struct CarriersListView: View {
             .padding(.horizontal, 16)
             .padding(.bottom, 16)
         }
-        .onAppear {
-            Task {
-                await viewModel.loadRoutes(from: fromStation, to: toStation)
-            }
+        .task {
+            await viewModel.loadRoutes(from: fromStation, to: toStation)
         }
     }
 }

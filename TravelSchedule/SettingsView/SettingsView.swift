@@ -1,13 +1,9 @@
 import SwiftUI
 
 struct SettingsView: View {
-    @AppStorage("theme") private var selectedTheme: Theme = .auto
+    @StateObject private var viewModel = SettingsViewModel()
     @Environment(\.colorScheme) private var colorScheme
-    @State private var isDarkMode: Bool = false
-    @State private var showNoInternet = false
-    @State private var showServerError = false
-    @State private var showAgreement = false
-
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             HStack {
@@ -15,8 +11,11 @@ struct SettingsView: View {
                     .font(.system(size: 17, weight: .regular))
                     .foregroundStyle(.blackDay)
                 Spacer()
-                Toggle("", isOn: $isDarkMode)
+                Toggle("", isOn: $viewModel.isDarkMode)
                     .labelsHidden()
+                    .onChange(of: viewModel.isDarkMode) { _, _ in
+                        viewModel.toggleDarkMode()
+                    }
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 8)
@@ -24,28 +23,29 @@ struct SettingsView: View {
             .clipShape(RoundedRectangle(cornerRadius: 12))
             .padding(.horizontal, 16)
             
-            HStack{
-                Text("Пользовательское соглашение")
-                    .font(.system(size: 17, weight: .regular))
-                    .foregroundStyle(.blackDay)
-                    .padding(.horizontal, 16)
-                    .padding(.vertical, 8)
-                    .padding(.horizontal, 16)
-               
-                Spacer()
-                Button(action: {
-                    showAgreement = true
-                }) {
+            Button(action: {
+                viewModel.showAgreementScreen()
+            }) {
+                HStack {
+                    Text("Пользовательское соглашение")
+                        .font(.system(size: 17, weight: .regular))
+                        .foregroundStyle(.blackDay)
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 8)
+                        .padding(.horizontal, 16)
+                    
+                    Spacer()
+                    
                     Image(systemName: "chevron.forward")
                         .foregroundStyle(.blackDay)
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 8)
+                        .frame(width: 34, height: 34)
                 }
-                .padding(.horizontal, -17)
-                .padding(.vertical, 8)
-                .frame(width: 34, height: 34)
             }
             
             Button(action: {
-                showNoInternet = true
+                viewModel.showNoInternetScreen()
             }) {
                 Text("Показать экран 'Нет интернета'")
                     .font(.system(size: 17, weight: .regular))
@@ -58,7 +58,7 @@ struct SettingsView: View {
             }
             
             Button(action: {
-                showServerError = true
+                viewModel.showServerErrorScreen()
             }) {
                 Text("Показать экран 'Ошибка сервера'")
                     .font(.system(size: 17, weight: .regular))
@@ -72,7 +72,7 @@ struct SettingsView: View {
             
             Spacer()
             
-            VStack(alignment: .center, spacing: 16){
+            VStack(alignment: .center, spacing: 16) {
                 Text("Приложение использует API «Яндекс.Расписания»")
                     .font(.system(size: 12, weight: .regular))
                     .foregroundStyle(.blackDay)
@@ -87,31 +87,23 @@ struct SettingsView: View {
             .padding(.horizontal, 30)
         }
         .toolbar(.visible, for: .tabBar)
-        .preferredColorScheme(selectedTheme == .auto ? nil : (selectedTheme == .dark ? .dark : .light))
-        .onAppear {
-            isDarkMode = selectedTheme == .dark || (selectedTheme == .auto && colorScheme == .dark)
+        .preferredColorScheme(viewModel.selectedTheme == .auto ? nil : (viewModel.selectedTheme == .dark ? .dark : .light))
+        .onChange(of: colorScheme) { _, newValue in
+            viewModel.updateForColorScheme(newValue)
         }
-        .onChange(of: isDarkMode) { newValue in
-            selectedTheme = newValue ? .dark : .light
-        }
-        .onChange(of: colorScheme) { newValue in
-            if selectedTheme == .auto {
-                isDarkMode = newValue == .dark
+        .fullScreenCover(isPresented: $viewModel.showNoInternet) {
+            NavigationStack {
+                NoInternetViewWrapper(isPresented: $viewModel.showNoInternet)
             }
         }
-        .fullScreenCover(isPresented: $showNoInternet) {
+        .fullScreenCover(isPresented: $viewModel.showServerError) {
             NavigationStack {
-                NoInternetViewWrapper(isPresented: $showNoInternet)
+                ServerErrorViewWrapper(isPresented: $viewModel.showServerError)
             }
         }
-        .fullScreenCover(isPresented: $showServerError) {
+        .fullScreenCover(isPresented: $viewModel.showAgreement) {
             NavigationStack {
-                ServerErrorViewWrapper(isPresented: $showServerError)
-            }
-        }
-        .fullScreenCover(isPresented: $showAgreement) {
-            NavigationStack {
-                AgreementViewWrapper(isPresented: $showAgreement)
+                AgreementViewWrapper(isPresented: $viewModel.showAgreement)
             }
         }
     }
